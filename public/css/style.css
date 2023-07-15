@@ -3,7 +3,22 @@ body {
   background-image: url("/img/fondo.jpg");
   background-size: cover;
 }
-a{
+
+/* .material-symbols-outlined {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2000;
+  color:red;
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
+} */
+
+
+.navbar a{
   width: 100%;
   text-align: center;
 }

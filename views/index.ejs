@@ -6,6 +6,7 @@
 
     <% for(let i=0; i<data.muebles.length;i++){%>
       <div class="card">
+        <!-- <a href=""><span class="material-symbols-outlined">Delete</span></a> -->
         <img src="/img/<%=data.muebles[i].codigo%>.jpg" alt="<%=data.muebles[i].nombre%>">
         <div class="card-body">
           <h5 class="card-title name"><%= data.muebles[i].nombre %></h5>
@@ -13,6 +14,7 @@
           <p class="card-text price">$<%= data.muebles[i].precio %></p>
         </div>
       </div>
+
 
     <% } %>
 

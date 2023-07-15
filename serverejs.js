@@ -28,14 +28,27 @@ app.get("/mobiliario", async (req, res) => {
     const db = client.db("mobiliario");
     const muebles = await db.collection("mobiliario").find().toArray();
 
-    let data = {
-      muebles: muebles
+    if (muebles) {
+      let data = {
+        muebles: muebles
+      }
+      res.render('index', { data: data });
+      //res.json(muebles);
     }
-    res.render('index', { data: data });
-    //res.json(muebles);
+    else {
+      const data = {
+        message: "No existen muebles en la base de datos"
+      }
+      res.render('error', data);
+      //res.status(404).send("Mueble no encontrado");
+    }
   } catch (error) {
     // Manejo de errores al obtener los muebles
-    res.status(500).send("Error al obtener muebles de la base de datos");
+    const data = {
+      message: "No existen muebles en la base de datos"
+    }
+    res.render('error', data);
+    //res.status(500).send("Error al obtener muebles de la base de datos");
   } finally {
     // Desconexión de la base de datos
     await disconnectFromMongoDB();
@@ -63,11 +76,19 @@ app.get("/mobiliario/:codigo", async (req, res) => {
       }
       res.render('index', { data: data });
     } else {
-      res.status(404).send("Mueble no encontrado");
+      const data = {
+        message: "No existe mueble con el codigo enviado"
+      }
+      res.render('error', data);
+      //res.status(404).send("Mueble no encontrado");
     }
   } catch (error) {
     // Manejo de errores al obtener el mueble
-    res.status(500).send("Error al obtener un mueble de la base de datos por su código");
+    const data = {
+      message: "Error al obtener un mueble de la base de datos por su código"
+    }
+    res.render('error', data);
+    //res.status(500).send("Error al obtener un mueble de la base de datos por su código");
   } finally {
     // Desconexión de la base de datos
     await disconnectFromMongoDB();
@@ -100,11 +121,19 @@ app.get("/mobiliario/nombre/:nombre", async (req, res) => {
       }
       res.render('index', { data: data });
     } else {
-      res.status(404).send("Mueble/s no encontrado/s");
+      const data = {
+        message: "Mueble/s no encontrado/s",
+      }
+      res.render('error', data);
+      //res.status(404).send("Mueble/s no encontrado/s");
     }
   } catch (error) {
     // Manejo de errores al obtener muebles por su nombre
-    res.status(500).send("Error al obtener mueble/s de la base de datos por su nombre");
+    const data = {
+      message: "Error al obtener mueble/s de la base de datos por su nombre",
+    }
+    res.render('error', data);
+    //res.status(500).send("Error al obtener mueble/s de la base de datos por su nombre");
   } finally {
     // Desconexión de la base de datos
     await disconnectFromMongoDB();
@@ -137,16 +166,25 @@ app.get("/mobiliario/categoria/:categoria", async (req, res) => {
       }
       res.render('index', { data: data });
     } else {
-      res.status(404).send("Mueble/s no encontrado/s");
+      const data = {
+        message: "Mueble/s no encontrado/s o Categoria inexistente",
+      }
+      res.render('error', data);
+      //res.status(404).send("Mueble/s no encontrado/s");
     }
   } catch (error) {
     // Manejo de errores al obtener los muebles por su categoria
-    res.status(500).send("Error al obtener mueble/s de la base de datos por su categoria");
+    const data = {
+      message: "Error al obtener mueble/s de la base de datos por su categoria",
+    }
+    res.render('error', data);
+    //res.status(500).send("Error al obtener mueble/s de la base de datos por su categoria");
   } finally {
     // Desconexión de la base de datos
     await disconnectFromMongoDB();
   }
 });
+
 
 // Ruta para eliminar un recurso
 app.delete("/mobiliario/:codigo", async (req, res) => {
@@ -185,9 +223,14 @@ app.delete("/mobiliario/:codigo", async (req, res) => {
   }
 });
 
+
 //ruta predeterminada para manejar rutas inexistentes
 app.use((req, res) => {
-  res.status(404).send("No existe el Endpoint");
+  const data = {
+    message: "Ruta invalida",
+  }
+  res.render('error', data);
+  //res.status(404).send("No existe el Endpoint");
 });
 
 

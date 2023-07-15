@@ -1,0 +1,25 @@
+<%- include('head') %>
+<div class="logo-header">
+  <img class="logo" src="./img/logo.png">
+</div>
+
+<div class="container">
+      <% for(let i=0; i<frutas.length;i++){%>
+
+        <div class="card"">
+          <img class="card-img-top" src="./img/<%= frutas[i].nombre %>.png">
+          <div class="card-body">
+            <h5 class="card-title name"><%= frutas[i].nombre %></h5>
+            <p class="card-text stock">Stock: <%= frutas[i].stock %>u.</p>
+            <p class="card-text price">$<%= frutas[i].importe %></p>
+            <!--<a href="#" class="btn btn-primary">Comprar</a>-->
+          </div>
+        </div>
+
+      <% } %>
+
+</div>
+
+<%- include('footer') %>
+</body>
+</html>

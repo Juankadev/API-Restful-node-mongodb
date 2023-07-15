@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <div class="container">
+    <% for(let i=0; i<muebles.length;i++){%>
+
+      <div class="card"">
+        <div class="card-body">
+          <h5 class="card-title name"><%= muebles[i].nombre %></h5>
+          <p class="card-text stock"><%= muebles[i].categoria %>u.</p>
+          <p class="card-text price">$<%= muebles[i].precio %></p>
+        </div>
+      </div>
+
+    <% } %>
+
+</div>
+  
+</body>
+</html>

@@ -1,26 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
+<%- include('head') %>
 <body>
+  <%- include('navbar') %>
 
   <div class="container">
-    <% for(let i=0; i<muebles.length;i++){%>
 
-      <div class="card"">
+    <% for(let i=0; i<data.muebles.length;i++){%>
+      <div class="card">
+        <img src="/img/<%=data.muebles[i].codigo%>.jpg" alt="<%=data.muebles[i].nombre%>">
         <div class="card-body">
-          <h5 class="card-title name"><%= muebles[i].nombre %></h5>
-          <p class="card-text stock"><%= muebles[i].categoria %>u.</p>
-          <p class="card-text price">$<%= muebles[i].precio %></p>
+          <h5 class="card-title name"><%= data.muebles[i].nombre %></h5>
+          <p class="card-text categoria"><%= data.muebles[i].categoria %></p>
+          <p class="card-text price">$<%= data.muebles[i].precio %></p>
         </div>
       </div>
 
     <% } %>
 
 </div>
-  
+<%- include('footer') %>
 </body>
 </html>

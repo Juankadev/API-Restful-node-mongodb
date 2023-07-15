@@ -2,43 +2,16 @@ const express = require("express");
 const path = require('path');
 const { connectToDB, disconnectFromMongoDB } = require("./src/mongodb");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 app.set('view engine', 'ejs');
-app.use(express.static('views'));
-
-app.use(express.json());
-
-// Middleware para establecer el encabezado Content-Type en las respuestas
-app.use((req, res, next) => {
-  res.header("Content-Type", "application/json; charset=utf-8");
-  next();
-});
-
+// Configurar la carpeta "public" como directorio de archivos estáticos
+app.use(express.static(path.join(__dirname, "public")));
 
 
 app.get('/', async (req, res) => {
-    try {
-        const client = await connectToDB();
-        if (!client) {
-            res.status(500).send("Error al conectarse a MongoDB");
-            return;
-        }
-        const db = client.db("mobiliario");
-        const frutas = await db.collection("mobiliario").find().toArray();
-        const data = {
-          muebles: frutas
-        };
-        res.render('index', data);
-    }
-    catch (error) {
-        res.status(500).send("Error al obtener las frutas de la base de datos", error);
-    }
-    finally {
-        await disconnectFromMongoDB();
-    }
+  res.status(200).end("<h1>Bienvenido a la API de Frutas");
 });
-
 
 
 // Ruta para obtener todos los recursos
@@ -54,7 +27,12 @@ app.get("/mobiliario", async (req, res) => {
     // Obtener la colección de muebles y convertir los documentos a un array
     const db = client.db("mobiliario");
     const muebles = await db.collection("mobiliario").find().toArray();
-    res.json(muebles);
+
+    let data = {
+      muebles: muebles
+    }
+    res.render('index', { data: data });
+    //res.json(muebles);
   } catch (error) {
     // Manejo de errores al obtener los muebles
     res.status(500).send("Error al obtener muebles de la base de datos");
@@ -63,6 +41,7 @@ app.get("/mobiliario", async (req, res) => {
     await disconnectFromMongoDB();
   }
 });
+
 
 // Ruta para obtener un recurso por su codigo
 app.get("/mobiliario/:codigo", async (req, res) => {
@@ -79,7 +58,10 @@ app.get("/mobiliario/:codigo", async (req, res) => {
     const db = client.db("mobiliario");
     const mueble = await db.collection("mobiliario").findOne({ codigo: codigo });
     if (mueble) {
-      res.json(mueble);
+      let data = {
+        muebles: [mueble] //como findOne devuelve un objeto y no un array, si agregamos [] en el objeto mueble, este se convierte en un array con un elemento, y ahora podremos usarlo en nuestro ciclo for de la vista index.ejs ya que este procesa arrays
+      }
+      res.render('index', { data: data });
     } else {
       res.status(404).send("Mueble no encontrado");
     }
@@ -91,6 +73,7 @@ app.get("/mobiliario/:codigo", async (req, res) => {
     await disconnectFromMongoDB();
   }
 });
+
 
 // Ruta para obtener un recurso/s por su nombre
 app.get("/mobiliario/nombre/:nombre", async (req, res) => {
@@ -110,9 +93,12 @@ app.get("/mobiliario/nombre/:nombre", async (req, res) => {
       .collection("mobiliario")
       .find({ nombre: nombreRegExp })
       .toArray();
-   
+
     if (muebles.length > 0) {
-      res.json(muebles);
+      let data = {
+        muebles: muebles
+      }
+      res.render('index', { data: data });
     } else {
       res.status(404).send("Mueble/s no encontrado/s");
     }
@@ -124,6 +110,7 @@ app.get("/mobiliario/nombre/:nombre", async (req, res) => {
     await disconnectFromMongoDB();
   }
 });
+
 
 // Ruta para obtener un recurso/s por su categoria
 app.get("/mobiliario/categoria/:categoria", async (req, res) => {
@@ -143,75 +130,18 @@ app.get("/mobiliario/categoria/:categoria", async (req, res) => {
       .collection("mobiliario")
       .find({ categoria: categoriaRegExp })
       .toArray();
-   
+
     if (muebles.length > 0) {
-      res.json(muebles);
+      let data = {
+        muebles: muebles //como findOne devuelve un objeto y no un array, si agregamos [] en el objeto mueble, este se convierte en un array con un elemento, y ahora podremos usarlo en nuestro ciclo for de la vista index.ejs ya que este procesa arrays
+      }
+      res.render('index', { data: data });
     } else {
       res.status(404).send("Mueble/s no encontrado/s");
     }
   } catch (error) {
     // Manejo de errores al obtener los muebles por su categoria
     res.status(500).send("Error al obtener mueble/s de la base de datos por su categoria");
-  } finally {
-    // Desconexión de la base de datos
-    await disconnectFromMongoDB();
-  }
-});
-
-// Ruta para agregar un recurso
-app.post("/mobiliario", async (req, res) => {
-  const mueble = req.body;
-  try {
-    if (mueble === undefined) {
-      res.status(400).send("Error en el formato de datos a crear.");
-    }
-
-    // Conexión a la base de datos
-    const client = await connectToDB();
-    if (!client) {
-      res.status(500).send("Error al conectarse a MongoDB");
-    }
-
-    const db = client.db("mobiliario");
-    const collection = db.collection("mobiliario");
-    await collection.insertOne(mueble);
-    console.log("Nuevo mueble creado");
-    res.status(201).send(mueble);
-  } catch (error) {
-    // Manejo de errores al agregar un mueble
-    res.status(500).send("Error al intentar agregar un nuevo mueble");
-  } finally {
-    // Desconexión de la base de datos
-    await disconnectFromMongoDB();
-  }
-});
-
-//Ruta para modificar el precio de un recurso
-app.put("/mobiliario/:codigo", async (req, res) => {
-  const codigo = parseInt(req.params.codigo);
-  const precio = req.body.precio; //si no llega el campo precio guarda undefined
-  try {
-    if (!precio) {
-      res.status(400).send("El campo precio no se definió en el cuerpo de la solicitud");
-    }
-
-    // Conexión a la base de datos
-    const client = await connectToDB();
-    if (!client) {
-      res.status(500).send("Error al conectarse a MongoDB");
-    }
-
-    const db = client.db("mobiliario");
-    const collection = db.collection("mobiliario");
-
-    await collection.updateOne({ codigo: codigo }, { $set: {precio: precio} });
-
-    console.log("Precio modificado");
-
-    res.status(200).send(precio);
-  } catch (error) {
-    // Manejo de errores al modificar un precio
-    res.status(500).send("Error al modificar un precio");
   } finally {
     // Desconexión de la base de datos
     await disconnectFromMongoDB();
@@ -256,9 +186,13 @@ app.delete("/mobiliario/:codigo", async (req, res) => {
 });
 
 //ruta predeterminada para manejar rutas inexistentes
-app.use((req,res)=>{
-    res.status(404).send("No existe el Endpoint");
+app.use((req, res) => {
+  res.status(404).send("No existe el Endpoint");
 });
+
+
+
+
 
 // Iniciar el servidor
 app.listen(PORT, () => {

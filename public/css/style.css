@@ -1,0 +1,83 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-image: url("/img/fondo.jpg");
+  background-size: cover;
+}
+a{
+  width: 100%;
+  text-align: center;
+}
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: lightgray;
+  padding: 10px;
+  z-index: 1000;
+  display: flex;
+}
+
+ul{
+  width: 100%;
+  justify-content: center;
+}
+.container {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 6rem;
+  margin-bottom: 3rem;
+}
+.card {
+  width: calc(20% - 3rem);
+  border: none;
+  overflow: hidden;
+  margin-bottom: 3rem;
+  transition: 1s;
+}
+img{
+  height: 12rem;
+  object-fit: cover;  
+  transition: 1s;
+}
+.card:hover{
+  box-shadow: 0 0 15px 0 #00000076;
+}
+.card:hover img{
+  transform: scale(1.07);
+  cursor: grab;
+}
+.card-body {
+  text-align: center;
+  z-index: 100;
+  /* background-color: #fff; */
+}
+
+.name{
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.price {
+  /* background-color: #7ef285; */
+  color: rgb(0, 0, 0);
+  position: absolute;
+  bottom: 0;
+  width: 80%;
+}
+
+footer {
+  margin-top: 3rem;
+  text-align: center;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  background-color: lightgray;
+}
+
+@media (min-width: 1200px){
+.container, .container-lg, .container-md, .container-sm, .container-xl {
+    max-width: 100%;
+}
+}

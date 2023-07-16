@@ -13,7 +13,7 @@ app.use((req, res, next) => {
 
 // Ruta de inicio
 app.get("/", (req, res) => {
-  res.status(200).end("Bienvenido a la API de Frutas");
+  res.status(200).end("Bienvenido a la API de Mobiliarios");
 });
 
 // Ruta para obtener todos los recursos

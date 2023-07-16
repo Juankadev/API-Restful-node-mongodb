@@ -11,10 +11,12 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Ruta de inicio
 app.get("/", (req, res) => {
   res.status(200).end("Bienvenido a la API de Mobiliarios");
 });
+
 
 // Ruta para obtener todos los recursos
 app.get("/mobiliario", async (req, res) => {
@@ -29,7 +31,12 @@ app.get("/mobiliario", async (req, res) => {
     // Obtener la colección de muebles y convertir los documentos a un array
     const db = client.db("mobiliario");
     const muebles = await db.collection("mobiliario").find().toArray();
-    res.json(muebles);
+    if (muebles.length > 0) {
+      res.json(muebles);
+      return;
+    }
+    res.status(500).send("Error al obtener muebles de la base de datos");
+
   } catch (error) {
     // Manejo de errores al obtener los muebles
     res.status(500).send("Error al obtener muebles de la base de datos");
@@ -39,10 +46,16 @@ app.get("/mobiliario", async (req, res) => {
   }
 });
 
+
 // Ruta para obtener un recurso por su codigo
 app.get("/mobiliario/:codigo", async (req, res) => {
-  const codigo = parseInt(req.params.codigo);
   try {
+    const codigo = parseInt(req.params.codigo);
+
+    if (isNaN(codigo)) { //entra por acá si se envia algo como /"2" etc
+      res.status(400).send("El parametro enviado no es valido");
+      return;
+    }
     // Conexión a la base de datos
     const client = await connectToDB();
     if (!client) {
@@ -67,9 +80,10 @@ app.get("/mobiliario/:codigo", async (req, res) => {
   }
 });
 
+
 // Ruta para obtener un recurso/s por su nombre
 app.get("/mobiliario/nombre/:nombre", async (req, res) => {
-  const nombre = req.params.nombre;
+  const nombre = req.params.nombre.trim();
   let nombreRegExp = RegExp(nombre, "i");
   try {
     // Conexión a la base de datos
@@ -85,7 +99,7 @@ app.get("/mobiliario/nombre/:nombre", async (req, res) => {
       .collection("mobiliario")
       .find({ nombre: nombreRegExp })
       .toArray();
-   
+
     if (muebles.length > 0) {
       res.json(muebles);
     } else {
@@ -100,10 +114,11 @@ app.get("/mobiliario/nombre/:nombre", async (req, res) => {
   }
 });
 
+
 // Ruta para obtener un recurso/s por su categoria
 app.get("/mobiliario/categoria/:categoria", async (req, res) => {
-  const categoria = req.params.categoria;
-  let categoriaRegExp = RegExp(categoria, "i");
+  const categoria = req.params.categoria.trim();
+  let categoriaRegExp = RegExp(`^${categoria}$`, "i");
   try {
     // Conexión a la base de datos
     const client = await connectToDB();
@@ -118,11 +133,11 @@ app.get("/mobiliario/categoria/:categoria", async (req, res) => {
       .collection("mobiliario")
       .find({ categoria: categoriaRegExp })
       .toArray();
-   
+
     if (muebles.length > 0) {
       res.json(muebles);
     } else {
-      res.status(404).send("Mueble/s no encontrado/s");
+      res.status(400).send("Categoria no encontrada");
     }
   } catch (error) {
     // Manejo de errores al obtener los muebles por su categoria
@@ -132,6 +147,9 @@ app.get("/mobiliario/categoria/:categoria", async (req, res) => {
     await disconnectFromMongoDB();
   }
 });
+
+
+
 
 // Ruta para agregar un recurso
 app.post("/mobiliario", async (req, res) => {
@@ -161,6 +179,7 @@ app.post("/mobiliario", async (req, res) => {
   }
 });
 
+
 //Ruta para modificar el precio de un recurso
 app.put("/mobiliario/:codigo", async (req, res) => {
   const codigo = parseInt(req.params.codigo);
@@ -179,7 +198,7 @@ app.put("/mobiliario/:codigo", async (req, res) => {
     const db = client.db("mobiliario");
     const collection = db.collection("mobiliario");
 
-    await collection.updateOne({ codigo: codigo }, { $set: {precio: precio} });
+    await collection.updateOne({ codigo: codigo }, { $set: { precio: precio } });
 
     console.log("Precio modificado");
 
@@ -192,6 +211,7 @@ app.put("/mobiliario/:codigo", async (req, res) => {
     await disconnectFromMongoDB();
   }
 });
+
 
 // Ruta para eliminar un recurso
 app.delete("/mobiliario/:codigo", async (req, res) => {
@@ -230,10 +250,12 @@ app.delete("/mobiliario/:codigo", async (req, res) => {
   }
 });
 
+
 //ruta predeterminada para manejar rutas inexistentes
-app.use((req,res)=>{
-    res.status(404).send("No existe el Endpoint");
+app.use((req, res) => {
+  res.status(404).send("No existe el Endpoint");
 });
+
 
 // Iniciar el servidor
 app.listen(PORT, () => {

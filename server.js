@@ -1,7 +1,10 @@
 const express = require("express");
 const { connectToDB, disconnectFromMongoDB } = require("./src/mongodb");
+const { bool } = require("prop-types");
+const { boolean } = require("webidl-conversions");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const { MongoError } = require("mongodb"); //para lanzar excepciones de tipo MongoError
 
 app.use(express.json());
 
@@ -84,7 +87,7 @@ app.get("/mobiliario/:codigo", async (req, res) => {
 // Ruta para obtener un recurso/s por su nombre
 app.get("/mobiliario/nombre/:nombre", async (req, res) => {
   const nombre = req.params.nombre.trim();
-  let nombreRegExp = RegExp(nombre, "i");
+  let nombreRegExp = RegExp(nombre, "iu");
   try {
     // Conexión a la base de datos
     const client = await connectToDB();
@@ -150,13 +153,18 @@ app.get("/mobiliario/categoria/:categoria", async (req, res) => {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////
+
+
 
 // Ruta para agregar un recurso
 app.post("/mobiliario", async (req, res) => {
   const mueble = req.body;
   try {
+    //pasara por acá si no estan los middleware que formatean las solicitudes, por ejemplo si sacamos la linea de  app.use(express.json());
     if (mueble === undefined) {
       res.status(400).send("Error en el formato de datos a crear.");
+      return;
     }
 
     // Conexión a la base de datos
@@ -167,9 +175,18 @@ app.post("/mobiliario", async (req, res) => {
 
     const db = client.db("mobiliario");
     const collection = db.collection("mobiliario");
+
+    //Validar codigo repetido
+    let existCodigo = await collection.find({ codigo: mueble.codigo }).toArray();
+    if (existCodigo.length > 0) {
+      res.status(400).send("El codigo ingresado ya existe en la Base de Datos.");
+      return;
+    }
+
     await collection.insertOne(mueble);
     console.log("Nuevo mueble creado");
     res.status(201).send(mueble);
+
   } catch (error) {
     // Manejo de errores al agregar un mueble
     res.status(500).send("Error al intentar agregar un nuevo mueble");
@@ -180,32 +197,57 @@ app.post("/mobiliario", async (req, res) => {
 });
 
 
+
 //Ruta para modificar el precio de un recurso
-app.put("/mobiliario/:codigo", async (req, res) => {
+app.patch("/mobiliario/:codigo", async (req, res) => {
   const codigo = parseInt(req.params.codigo);
   const precio = req.body.precio; //si no llega el campo precio guarda undefined
   try {
+    if (isNaN(codigo)) { //si se envian letras por parametro
+      throw new SyntaxError('El codigo enviado por parametro debe ser numerico');
+    }
     if (!precio) {
-      res.status(400).send("El campo precio no se definió en el cuerpo de la solicitud");
+      //res.status(400).send("El campo precio no se definió en el cuerpo de la solicitud");
+      throw new SyntaxError('El campo precio no se definió en el cuerpo de la solicitud');
+    }
+    if (typeof precio !== "number") {
+      throw new SyntaxError('El valor del precio debe ser numerico');
     }
 
     // Conexión a la base de datos
     const client = await connectToDB();
     if (!client) {
-      res.status(500).send("Error al conectarse a MongoDB");
+      //res.status(500).send("Error al conectarse a MongoDB");
+      throw new MongoError('Error al conectarse a MongoDB');
     }
 
     const db = client.db("mobiliario");
     const collection = db.collection("mobiliario");
 
-    await collection.updateOne({ codigo: codigo }, { $set: { precio: precio } });
+    //Validar que exista el codigo
+    let existCodigo = await collection.find({ codigo: codigo }).toArray();
+    if (!existCodigo.length) { //si es 0, se convierte en true
+      res.status(400).send("El codigo ingresado no existe en la Base de Datos.");
+      return;
+    }
+    await collection.updateOne({ codigo: codigo }, { $set: { precio: precio } }); //por mas que el body se envien muchos campos, solo actualizamos el precio.
 
     console.log("Precio modificado");
+    res.status(204).send();
 
-    res.status(200).send(precio);
   } catch (error) {
+    if (error instanceof SyntaxError) {
+      error = error.message;
+      res.status(400).send(error);
+      return;
+    }
+    if (error instanceof MongoError) {
+      error = error.message;
+      res.status(500).send(error);
+      return;
+    }
     // Manejo de errores al modificar un precio
-    res.status(500).send("Error al modificar un precio");
+    res.status(400).send("Error al modificar un precio");
   } finally {
     // Desconexión de la base de datos
     await disconnectFromMongoDB();
@@ -217,7 +259,7 @@ app.put("/mobiliario/:codigo", async (req, res) => {
 app.delete("/mobiliario/:codigo", async (req, res) => {
   const codigo = parseInt(req.params.codigo);
   try {
-    if (!codigo) {
+    if (!codigo) { //entra si se envían letras
       res.status(400).send("Error en el formato de datos a eliminar.");
       return;
     }
@@ -225,8 +267,7 @@ app.delete("/mobiliario/:codigo", async (req, res) => {
     // Conexión a la base de datos
     const client = await connectToDB();
     if (!client) {
-      res.status(500).send("Error al conectarse a MongoDB");
-      return;
+      throw new MongoError('Error al conectarse a MongoDB');
     }
 
     // Obtener la colección de muebles, buscar un mueble por su codigo y eliminarlo
@@ -236,13 +277,17 @@ app.delete("/mobiliario/:codigo", async (req, res) => {
     if (resultado.deletedCount === 0) {
       res
         .status(404)
-        .send("No se encontró ningun mueble con el codigo enviado.");
+        .send("No se encontró ningun mueble con el codigo enviado para eliminar.");
     } else {
       console.log("Mueble eliminado");
       res.status(204).send();
     }
   } catch (error) {
-    // Manejo de errores al obtener las frutas
+    if (error instanceof MongoError) {
+      error = error.message;
+      res.status(500).send(error);
+      return;
+    }
     res.status(500).send("Error al eliminar el mueble");
   } finally {
     // Desconexión de la base de datos

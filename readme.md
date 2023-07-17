@@ -60,9 +60,9 @@ npm start
 Todas las consultas de tipo GET retornarán un formato JSON.
 
 La URL general para visualizar todos los productos.
-
+```py
 http://localhost:4000/mobiliario
-
+```
 
 ```json
 {
@@ -88,9 +88,9 @@ http://localhost:4000/mobiliario
 
 ### GET Codigo
 La URL general para visualizar un producto por su código
-
+```py
 http://localhost:4000/mobiliario/2 
-
+```
 ```json
   {
     "_id": "64b416afad2d5b968bdba9b6",
@@ -108,9 +108,10 @@ http://localhost:4000/mobiliario/2
 
 
 ### GET Nombre
-La URL que nos retorna un producto/s por su nombre o parte de él
+La URL que nos retorna un producto/s por su nombre o parte de él.
+```py
 http://localhost:4000/mobiliario/nombre/escritorio
-
+```
 ```json
   {
     "_id": "64b416afad2d5b968bdba9b6",
@@ -131,7 +132,9 @@ http://localhost:4000/mobiliario/nombre/escritorio
 
 ### GET Categoria
 La URL que nos retorna un producto/s por su categoria.
+```py
 http://localhost:4000/mobiliario/categoria/dormitorio
+```
 
 ```json
   {
@@ -181,9 +184,9 @@ http://localhost:4000/mobiliario/
 ### PATCH 
 La URL que nos permite modificar el precio de un recurso existente.
 En el cuerpo (body) de la solicitud solo podrás definir el campo "precio". 
-
+```py
 http://localhost:4000/mobiliario/31
-
+```
 
 ```json
   {
@@ -200,9 +203,9 @@ http://localhost:4000/mobiliario/31
 
 ### DELETE 
 La URL que nos permite eliminar un recurso existente
-
+```py
 http://localhost:4000/mobiliario/31
-
+```
 
 
 

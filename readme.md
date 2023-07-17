@@ -216,7 +216,7 @@ DATABASE_PATH=/database/frutas.json
 <br><br>
 
 # EJS
-Opcionalmente puedes visualizar los productos desde el navegador a traves de la URL base de productos http://localhost:4000/mobiliario y ejecutando el siguiente comando y archivo:
+Opcionalmente puedes visualizar el proyecto desde el navegador a traves del [Deploy](#deploy), o a traves de la URL base de productos http://localhost:4000/mobiliario y ejecutando el siguiente comando y archivo:
 ```
 node serverejs.js
 ```

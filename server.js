@@ -15,6 +15,24 @@ app.use((req, res, next) => {
 });
 
 
+
+function diacriticSensitiveRegex(string = '') {
+  return string
+    .replace(/a/g, '[a,á,à,ä,â]')
+    .replace(/A/g, '[A,a,á,à,ä,â]')
+    .replace(/e/g, '[e,é,ë,è]')
+    .replace(/E/g, '[E,e,é,ë,è]')
+    .replace(/i/g, '[i,í,ï,ì]')
+    .replace(/I/g, '[I,i,í,ï,ì]')
+    .replace(/o/g, '[o,ó,ö,ò]')
+    .replace(/O/g, '[O,o,ó,ö,ò]')
+    .replace(/u/g, '[u,ü,ú,ù]')
+    .replace(/U/g, '[U,u,ü,ú,ù]');
+}
+
+
+
+
 // Ruta de inicio
 app.get("/", (req, res) => {
   res.status(200).end("Bienvenido a la API de Mobiliarios");
@@ -85,27 +103,6 @@ app.get("/mobiliario/:codigo", async (req, res) => {
 
 
 
-
-
-
-function diacriticSensitiveRegex(string = '') {
-     return string
-        .replace(/a/g, '[a,á,à,ä,â]')
-        .replace(/A/g, '[A,a,á,à,ä,â]')
-        .replace(/e/g, '[e,é,ë,è]')
-        .replace(/E/g, '[E,e,é,ë,è]')
-        .replace(/i/g, '[i,í,ï,ì]')
-        .replace(/I/g, '[I,i,í,ï,ì]')
-        .replace(/o/g, '[o,ó,ö,ò]')
-        .replace(/O/g, '[O,o,ó,ö,ò]')
-        .replace(/u/g, '[u,ü,ú,ù]')
-        .replace(/U/g, '[U,u,ü,ú,ù]');
-    }
-
-
-
-
-
 // Ruta para obtener un recurso/s por su nombre
 app.get("/mobiliario/nombre/:nombre", async (req, res) => {
   const nombre = req.params.nombre.trim();
@@ -124,8 +121,8 @@ app.get("/mobiliario/nombre/:nombre", async (req, res) => {
       .collection("mobiliario")
       .find({ nombre: { $regex: diacriticSensitiveRegex(nombre), $options: 'i' } })
       .toArray();
-    
-      console.log(muebles.length)
+
+    console.log(muebles.length)
 
     if (muebles.length > 0) {
       res.json(muebles);
@@ -140,6 +137,7 @@ app.get("/mobiliario/nombre/:nombre", async (req, res) => {
     await disconnectFromMongoDB();
   }
 });
+
 
 
 // Ruta para obtener un recurso/s por su categoria
@@ -225,14 +223,17 @@ app.post("/mobiliario", async (req, res) => {
 //Ruta para modificar el precio de un recurso
 app.patch("/mobiliario/:codigo", async (req, res) => {
   const codigo = parseInt(req.params.codigo);
-  const precio = req.body.precio; //si no llega el campo precio guarda undefined
+  const precio = req.body.precio; //si no llega el campo precio, devuelve undefined
   try {
-    if (isNaN(codigo)) { //si se envian letras por parametro
+    if (isNaN(codigo)) { //si se envian un codigo con letras por parametro
       throw new SyntaxError('El codigo enviado por parametro debe ser numerico');
     }
     if (!precio) {
       //res.status(400).send("El campo precio no se definió en el cuerpo de la solicitud");
       throw new SyntaxError('El campo precio no se definió en el cuerpo de la solicitud');
+    }
+    if (Object.keys(req.body).length > 1) {
+      throw new Error('Solo puede actualizar el campo Precio.');
     }
     if (typeof precio !== "number") {
       throw new SyntaxError('El valor del precio debe ser numerico');
@@ -254,24 +255,33 @@ app.patch("/mobiliario/:codigo", async (req, res) => {
       res.status(400).send("El codigo ingresado no existe en la Base de Datos.");
       return;
     }
-    await collection.updateOne({ codigo: codigo }, { $set: { precio: precio } }); //por mas que el body se envien muchos campos, solo actualizamos el precio.
-
+    await collection.updateOne({ codigo: codigo }, { $set: { precio: precio } });
     console.log("Precio modificado");
     res.status(204).send();
 
-  } catch (error) {
+  }
+
+  catch (error) {
+    // Manejo de errores al modificar un precio
     if (error instanceof SyntaxError) {
       error = error.message;
       res.status(400).send(error);
       return;
     }
-    if (error instanceof MongoError) {
+    else if (error instanceof MongoError) {
       error = error.message;
       res.status(500).send(error);
       return;
     }
-    // Manejo de errores al modificar un precio
-    res.status(400).send("Error al modificar un precio");
+    else if (error instanceof Error) {
+      error = error.message;
+      res.status(400).send(error);
+      return;
+    }
+    else {
+      res.status(400).send("Error al modificar un precio");
+    }
+
   } finally {
     // Desconexión de la base de datos
     await disconnectFromMongoDB();

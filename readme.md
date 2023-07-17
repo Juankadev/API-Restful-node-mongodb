@@ -49,7 +49,7 @@ La URL general para visualizar todos los productos.
 http://localhost:4000/mobiliario
 
 
-```js
+```json
 {
     "_id": "64b416afad2d5b968bdba9b5",
     "codigo": 1,
@@ -75,7 +75,7 @@ http://localhost:4000/mobiliario
 La URL general para visualizar un producto por su código
 http://localhost:4000/mobiliario/2 
 
-```js
+```json
   {
     "_id": "64b416afad2d5b968bdba9b6",
     "codigo": 2,
@@ -95,7 +95,7 @@ http://localhost:4000/mobiliario/2
 La URL que nos retorna un producto/s por su nombre o parte de él
 http://localhost:4000/mobiliario/nombre/escritorio
 
-```js
+```json
   {
     "_id": "64b416afad2d5b968bdba9b6",
     "codigo": 2,
@@ -117,7 +117,7 @@ http://localhost:4000/mobiliario/nombre/escritorio
 La URL que nos retorna un producto/s por su categoria
 http://localhost:4000/mobiliario/categoria/dormitorio
 
-```js
+```json
   {
     "_id": "64b416afad2d5b968bdba9b7",
     "codigo": 3,
@@ -146,7 +146,7 @@ La URL que nos permite dar de alta un recurso
 
 http://localhost:4000/mobiliario/
 
-```js
+```json
   {
     "codigo": 31,
     "nombre": "Cama Queen Size",
@@ -166,10 +166,10 @@ La URL que nos permite modificar el precio de un recurso existente
 http://localhost:4000/mobiliario/31
 
 
-```js
+```json
   {
     "precio": 1579.99,
-  },
+  }
 ```
 
 

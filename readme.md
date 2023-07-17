@@ -226,6 +226,6 @@ Ten en cuenta que solo podras realizar solicitudes de tipo GET.
 <br>
 
 # Deploy
-[<a href="https://truthful-shimmering-plane.glitch.me/mobiliario](https://mobiliario.glitch.me/)">https://truthful-shimmering-plane.glitch.me/mobiliario(https://mobiliario.glitch.me/)</a>](https://mobiliario.glitch.me/)
+<a href="https://mobiliario.glitch.me">https://mobiliario.glitch.me</a>
 
 Ten en cuenta que solo podras realizar solicitudes de tipo GET.

@@ -220,8 +220,12 @@ Opcionalmente puedes visualizar los productos desde el navegador a traves de la 
 ```
 node serverejs.js
 ```
+Ten en cuenta que solo podras realizar solicitudes de tipo GET.
+
+
 <br>
 
 # Deploy
 <a href="https://truthful-shimmering-plane.glitch.me/mobiliario">https://truthful-shimmering-plane.glitch.me/mobiliario</a>
+
 Ten en cuenta que solo podras realizar solicitudes de tipo GET.

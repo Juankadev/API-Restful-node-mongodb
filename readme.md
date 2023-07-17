@@ -5,27 +5,33 @@
 Esta documentación le mostrará cómo realizar diferentes consultas.
 
 </br>
-<!-- 
-- [EJEMPLOS DE USO](#ejemplos-de-uso)
-- [GET](#get)
-    - [GET POR NOMBRE](#get-por-nombre)
-    - [GET POR PRECIO](#get-por-precio)
-- [POST](#post)
-- [PUT](#put)
-- [DELETE](#delete)
-- [.env](#env) -->
+
+- [Instalación](#instalación)
+  - [Dependencias:](#dependencias)
+- [Rutas](#rutas)
+- [Ejemplos de uso](#ejemplos-de-uso)
+  - [GET](#get)
+  - [GET Codigo](#get-codigo)
+  - [GET Nombre](#get-nombre)
+  - [GET Categoria](#get-categoria)
+  - [POST](#post)
+  - [PATCH](#patch)
+  - [DELETE](#delete)
+- [EJS](#ejs)
 
 
 
 ## Instalación
 ### Dependencias:
-Asumiendo que tiene node.js preinstalado, ejecute en su terminal el siguiente comando:
-
-
+Asumiendo que tiene node.js preinstalado, asegurese de estar posicionado en la carpeta de raiz del proyecto y ejecute en su terminal el siguiente comando:
 ```
 npm install
 ```
-Asegurese de estar posicionado en la carpeta de raiz del proyecto.
+
+Luego ya puede comenzar a ejecutar el programa.
+```
+npm start
+```
 
 <br>
 
@@ -43,9 +49,12 @@ Asegurese de estar posicionado en la carpeta de raiz del proyecto.
 
 <br>
 
-## EJEMPLOS DE USO
+## Ejemplos de uso
 ### GET
+Todas las consultas de tipo GET retornarán un formato JSON.
+
 La URL general para visualizar todos los productos.
+
 http://localhost:4000/mobiliario
 
 
@@ -71,8 +80,9 @@ http://localhost:4000/mobiliario
 
 
 
-### GET CODIGO
+### GET Codigo
 La URL general para visualizar un producto por su código
+
 http://localhost:4000/mobiliario/2 
 
 ```json
@@ -91,7 +101,7 @@ http://localhost:4000/mobiliario/2
 
 
 
-### GET NOMBRE
+### GET Nombre
 La URL que nos retorna un producto/s por su nombre o parte de él
 http://localhost:4000/mobiliario/nombre/escritorio
 
@@ -113,8 +123,8 @@ http://localhost:4000/mobiliario/nombre/escritorio
 
 
 
-### GET CATEGORIA
-La URL que nos retorna un producto/s por su categoria
+### GET Categoria
+La URL que nos retorna un producto/s por su categoria.
 http://localhost:4000/mobiliario/categoria/dormitorio
 
 ```json
@@ -142,7 +152,9 @@ http://localhost:4000/mobiliario/categoria/dormitorio
 
 
 ### POST 
-La URL que nos permite dar de alta un recurso
+La URL que nos permite dar de alta un recurso.
+Deberás enviar en el cuerpo (body) de la solicitud un documento en formato JSON.
+De resultar exitosa la operación, se retornará el mismo documento.
 
 http://localhost:4000/mobiliario/
 
@@ -152,7 +164,7 @@ http://localhost:4000/mobiliario/
     "nombre": "Cama Queen Size",
     "precio": 1279.99,
     "categoria": "Dormitorio"
-  },
+  }
 ```
 
 
@@ -161,14 +173,15 @@ http://localhost:4000/mobiliario/
 
 
 ### PATCH 
-La URL que nos permite modificar el precio de un recurso existente
+La URL que nos permite modificar el precio de un recurso existente.
+En el cuerpo (body) de la solicitud solo podrás definir el campo "precio". 
 
 http://localhost:4000/mobiliario/31
 
 
 ```json
   {
-    "precio": 1579.99,
+    "precio": 1579.99
   }
 ```
 
@@ -193,3 +206,12 @@ Deberás crear en tu carpeta raíz un archivo con nombre ".env" donde incluirás
 PORT=4000
 DATABASE_PATH=/database/frutas.json
 ``` -->
+
+<br><br>
+
+# EJS
+Opcionalmente puedes visualizar los productos desde el navegador a traves de la URL base de productos http://localhost:4000/mobiliario y ejecutando el siguiente comando y archivo:
+```
+node serverejs.js
+```
+Ten en cuenta que solo podras realizar solicitudes de tipo GET.

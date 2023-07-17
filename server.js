@@ -84,10 +84,32 @@ app.get("/mobiliario/:codigo", async (req, res) => {
 });
 
 
+
+
+
+
+function diacriticSensitiveRegex(string = '') {
+     return string
+        .replace(/a/g, '[a,á,à,ä,â]')
+        .replace(/A/g, '[A,a,á,à,ä,â]')
+        .replace(/e/g, '[e,é,ë,è]')
+        .replace(/E/g, '[E,e,é,ë,è]')
+        .replace(/i/g, '[i,í,ï,ì]')
+        .replace(/I/g, '[I,i,í,ï,ì]')
+        .replace(/o/g, '[o,ó,ö,ò]')
+        .replace(/O/g, '[O,o,ó,ö,ò]')
+        .replace(/u/g, '[u,ü,ú,ù]')
+        .replace(/U/g, '[U,u,ü,ú,ù]');
+    }
+
+
+
+
+
 // Ruta para obtener un recurso/s por su nombre
 app.get("/mobiliario/nombre/:nombre", async (req, res) => {
   const nombre = req.params.nombre.trim();
-  let nombreRegExp = RegExp(nombre, "iu");
+  //let nombreRegExp = RegExp(nombre, "i");
   try {
     // Conexión a la base de datos
     const client = await connectToDB();
@@ -100,8 +122,10 @@ app.get("/mobiliario/nombre/:nombre", async (req, res) => {
     const db = client.db("mobiliario");
     const muebles = await db
       .collection("mobiliario")
-      .find({ nombre: nombreRegExp })
+      .find({ nombre: { $regex: diacriticSensitiveRegex(nombre), $options: 'i' } })
       .toArray();
+    
+      console.log(muebles.length)
 
     if (muebles.length > 0) {
       res.json(muebles);

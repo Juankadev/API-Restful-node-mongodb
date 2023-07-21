@@ -1,7 +1,7 @@
 const express = require("express");
 const { connectToDB, disconnectFromMongoDB } = require("./src/mongodb");
-const { bool } = require("prop-types");
-const { boolean } = require("webidl-conversions");
+//const { bool } = require("prop-types");
+//const { boolean } = require("webidl-conversions");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const { MongoError } = require("mongodb"); //para lanzar excepciones de tipo MongoError
@@ -186,6 +186,11 @@ app.post("/mobiliario", async (req, res) => {
     //pasara por acá si no estan los middleware que formatean las solicitudes, por ejemplo si sacamos la linea de  app.use(express.json());
     if (mueble === undefined) {
       res.status(400).send("Error en el formato de datos a crear.");
+      return;
+    }
+
+    if(req.body.codigo === undefined || req.body.nombre===undefined || req.body.precio === undefined || req.body.categoria === undefined){
+      res.status(400).send("Error en el formato de datos a crear. Faltan campos");
       return;
     }
 

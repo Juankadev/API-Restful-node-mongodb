@@ -4,8 +4,14 @@
 <img src="https://cdn-images-1.medium.com/max/720/0*11eDqY4zA04y2_n6.jpg" alt="Descripción de la imagen" width="150px" />
 
 
+# Deploy
+<a href="https://mobiliario.glitch.me">https://mobiliario.glitch.me</a>
 
+Ten en cuenta que solo podras realizar solicitudes de tipo GET.
 
+![image](https://github.com/Juankadev/tp2-node-mongodb/assets/54191222/0ca29eb4-2552-4244-88b4-3a4c81262443)
+
+</br>
 
 <h2> Introducción</h2>
 Esta documentación le mostrará cómo realizar diferentes consultas.
@@ -228,9 +234,3 @@ Ten en cuenta que solo podras realizar solicitudes de tipo GET.
 
 <br>
 
-# Deploy
-<a href="https://mobiliario.glitch.me">https://mobiliario.glitch.me</a>
-
-Ten en cuenta que solo podras realizar solicitudes de tipo GET.
-
-![image](https://github.com/Juankadev/tp2-node-mongodb/assets/54191222/0ca29eb4-2552-4244-88b4-3a4c81262443)
